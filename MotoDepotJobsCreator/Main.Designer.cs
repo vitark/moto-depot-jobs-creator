@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             lb1 = new Label();
-            cbSerialNumer = new ComboBox();
             cbTaskType = new ComboBox();
             lb2 = new Label();
             btnCreate = new Button();
@@ -37,7 +36,7 @@
             fileToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
             toolsToolStripMenuItem = new ToolStripMenuItem();
-            generateToolStripMenuItem = new ToolStripMenuItem();
+            generateMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             decodeDepotJobToolStripMenuItem = new ToolStripMenuItem();
             originalToolStripMenuItem = new ToolStripMenuItem();
@@ -46,6 +45,7 @@
             helpToolStripMenuItem = new ToolStripMenuItem();
             aboutToolStripMenuItem = new ToolStripMenuItem();
             btnPasteSN = new Button();
+            tbSerialNumber = new TextBox();
             menuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -57,16 +57,6 @@
             lb1.Size = new Size(82, 15);
             lb1.TabIndex = 0;
             lb1.Text = "Serial Number";
-            // 
-            // cbSerialNumer
-            // 
-            cbSerialNumer.FormattingEnabled = true;
-            cbSerialNumer.Location = new Point(116, 40);
-            cbSerialNumer.MaxLength = 10;
-            cbSerialNumer.Name = "cbSerialNumer";
-            cbSerialNumer.Size = new Size(205, 23);
-            cbSerialNumer.TabIndex = 1;
-            cbSerialNumer.TextChanged += cbSerialNumer_TextChanged;
             // 
             // cbTaskType
             // 
@@ -116,21 +106,24 @@
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(92, 22);
+            exitToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
+            exitToolStripMenuItem.Size = new Size(134, 22);
             exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // toolsToolStripMenuItem
             // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { generateToolStripMenuItem, toolStripSeparator1, decodeDepotJobToolStripMenuItem, generateCertificateToolStripMenuItem });
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { generateMenuItem, toolStripSeparator1, decodeDepotJobToolStripMenuItem, generateCertificateToolStripMenuItem });
             toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             toolsToolStripMenuItem.Size = new Size(47, 20);
             toolsToolStripMenuItem.Text = "Tools";
             // 
-            // generateToolStripMenuItem
+            // generateMenuItem
             // 
-            generateToolStripMenuItem.Name = "generateToolStripMenuItem";
-            generateToolStripMenuItem.Size = new Size(182, 22);
-            generateToolStripMenuItem.Text = "Create DepotJob File";
+            generateMenuItem.Name = "generateMenuItem";
+            generateMenuItem.Size = new Size(182, 22);
+            generateMenuItem.Text = "Create DepotJob File";
+            generateMenuItem.Click += btnCreate_Click;
             // 
             // toolStripSeparator1
             // 
@@ -140,6 +133,7 @@
             // decodeDepotJobToolStripMenuItem
             // 
             decodeDepotJobToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { originalToolStripMenuItem, selfGeneratedToolStripMenuItem });
+            decodeDepotJobToolStripMenuItem.Enabled = false;
             decodeDepotJobToolStripMenuItem.Name = "decodeDepotJobToolStripMenuItem";
             decodeDepotJobToolStripMenuItem.Size = new Size(182, 22);
             decodeDepotJobToolStripMenuItem.Text = "Decode DepotJob ";
@@ -158,6 +152,7 @@
             // 
             // generateCertificateToolStripMenuItem
             // 
+            generateCertificateToolStripMenuItem.Enabled = false;
             generateCertificateToolStripMenuItem.Name = "generateCertificateToolStripMenuItem";
             generateCertificateToolStripMenuItem.Size = new Size(182, 22);
             generateCertificateToolStripMenuItem.Text = "Generate Certificate";
@@ -174,6 +169,7 @@
             aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             aboutToolStripMenuItem.Size = new Size(107, 22);
             aboutToolStripMenuItem.Text = "About";
+            aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
             // 
             // btnPasteSN
             // 
@@ -185,16 +181,25 @@
             btnPasteSN.UseVisualStyleBackColor = true;
             btnPasteSN.Click += btnPasteSN_Click;
             // 
+            // tbSerialNumber
+            // 
+            tbSerialNumber.BackColor = SystemColors.Window;
+            tbSerialNumber.Location = new Point(116, 40);
+            tbSerialNumber.Name = "tbSerialNumber";
+            tbSerialNumber.Size = new Size(205, 23);
+            tbSerialNumber.TabIndex = 7;
+            tbSerialNumber.TextChanged += tbSerialNumber_TextChanged;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(370, 178);
+            Controls.Add(tbSerialNumber);
             Controls.Add(btnPasteSN);
             Controls.Add(btnCreate);
             Controls.Add(lb2);
             Controls.Add(cbTaskType);
-            Controls.Add(cbSerialNumer);
             Controls.Add(lb1);
             Controls.Add(menuStrip);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -202,6 +207,7 @@
             MaximizeBox = false;
             Name = "Main";
             Text = "Motorola Depot Jobs Creator";
+            FormClosing += Main_FormClosing;
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
             ResumeLayout(false);
@@ -211,7 +217,6 @@
         #endregion
 
         private Label lb1;
-        private ComboBox cbSerialNumer;
         private ComboBox cbTaskType;
         private Label lb2;
         private Button btnCreate;
@@ -219,7 +224,7 @@
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem toolsToolStripMenuItem;
-        private ToolStripMenuItem generateToolStripMenuItem;
+        private ToolStripMenuItem generateMenuItem;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem decodeDepotJobToolStripMenuItem;
         private ToolStripMenuItem originalToolStripMenuItem;
@@ -228,5 +233,6 @@
         private ToolStripMenuItem helpToolStripMenuItem;
         private ToolStripMenuItem aboutToolStripMenuItem;
         private Button btnPasteSN;
+        private TextBox tbSerialNumber;
     }
 }
