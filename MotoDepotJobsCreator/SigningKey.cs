@@ -4,55 +4,17 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MotoDepotJobsCreator
 {
-    internal class SigningKey
+    internal class SigningKey : PublicKey
     {
-        private const string PublicKeyFilename = "PublicKey.xml";
-        private const string PrivateKeyFilename = "PrivateKey.xml";
-        public static string KeysDirname = "keys";
-       
-        private const string Key = "33580704225959009476022150906537520183714542776639493478938153504813914707333";
-        private const string Iv = "Bns9UYbayCPCUbzHhS5x2A==";
-
-        public string Name { get; }
-        public string PublicKey { get; }
-        public string PrivateKey { get; }
-
-        public string Error { get; set; }
-
-        public SigningKey(string path)
+        protected const string privateKeyFile = "ServerPrivateKey.xml";
+        private string privateKey { get; }
+        public SigningKey(string path) : base(path)
         {
-            if (path == null || string.IsNullOrWhiteSpace(path)) 
-                throw new ArgumentNullException("Key path cannot be null or empty");
-
-            if (!Directory.Exists(path))
-                throw new ArgumentException("Path of signing key not exists.");
-
-            Error = "";
-            PublicKey = Path.Combine(path, PublicKeyFilename); ;
-            PrivateKey = Path.Combine(path, PrivateKeyFilename); 
-            Name = Path.GetFileName(path);
-        }
-
-        public bool Validate()
-        {
-            Error = "";
-            if (!File.Exists(PublicKey))
-            {
-
-                Error = $"Public key not found. [AppExecDir]/{KeysDirname}/{Name}/{PublicKeyFilename}";
-                return false;
-            }
-
-            if (!File.Exists(PrivateKey))
-            {
-                Error = $"Private key not found. [AppExecDir]/{KeysDirname}/{Name}/{PrivateKeyFilename}";
-                return false;
-            }
-
-            return true;
+            privateKey = Path.Combine(path, privateKeyFile); 
         }
 
         public bool TestKey()
@@ -60,7 +22,7 @@ namespace MotoDepotJobsCreator
             if (!Validate())
                 return false;
 
-            var xml = File.ReadAllText(PrivateKey);
+            var xml = File.ReadAllText(privateKey);
             const string msg = "0123456789";
 
             var encodedResult = Encoder.Run(
@@ -80,15 +42,27 @@ namespace MotoDepotJobsCreator
 
             if (msg != Encoding.UTF8.GetString(msgDecoded))
             {
-                Error = "Invalid public/private key.";
+                Error = "Invalid public key.";
                 return false;
             }
 
             return true;
         }
-        public bool hasError() {
-            return !string.IsNullOrEmpty(Error);
+        override public bool Validate()
+        {
+            if (!base.Validate())
+                return false;
+
+            if (!File.Exists(privateKey))
+            {
+                Error = $"Private key not found. [AppExecDir]/{KeysDirname}/{Name}/{privateKeyFile}";
+                return false;
+            }
+
+            return true;
         }
+
+
 
     }
 }

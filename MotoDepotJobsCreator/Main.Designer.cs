@@ -155,12 +155,14 @@
             originalToolStripMenuItem.Name = "originalToolStripMenuItem";
             originalToolStripMenuItem.Size = new Size(180, 22);
             originalToolStripMenuItem.Text = "Motorola Original";
+            originalToolStripMenuItem.Click += originalToolStripMenuItem_Click;
             // 
             // selfGeneratedToolStripMenuItem
             // 
             selfGeneratedToolStripMenuItem.Name = "selfGeneratedToolStripMenuItem";
             selfGeneratedToolStripMenuItem.Size = new Size(180, 22);
             selfGeneratedToolStripMenuItem.Text = "Self Generated";
+            selfGeneratedToolStripMenuItem.Click += selfGeneratedToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 

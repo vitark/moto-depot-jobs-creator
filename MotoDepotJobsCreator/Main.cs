@@ -29,7 +29,7 @@ namespace MotoDepotJobsCreator
         private class SigningKeyItem
         {
             public string? Name { get; set; }
-            public SigningKey SigningKey { get; set; }
+            public SigningKey? SigningKey { get; set; }
         }
 
         private void configureJobTypeCombobox()
@@ -62,7 +62,7 @@ namespace MotoDepotJobsCreator
             var keysDir = Path.Combine(Directory.GetCurrentDirectory(), SigningKey.KeysDirname);
             if (!Directory.Exists(keysDir) || Directory.GetDirectories(keysDir).Length == 0)
             {
-                warningText(@"No signing key(s) found.");
+                warningText("No signing key(s) found.");
                 return;
             }
 
@@ -144,7 +144,8 @@ namespace MotoDepotJobsCreator
                 warningText(sk.Error);
                 if (sk.hasError())
                     return;
-            } else
+            }
+            else
                 return;
 
             btnCreate.Enabled = (new SerialNumber(tbSerialNumber.Text).validate());
@@ -170,13 +171,13 @@ namespace MotoDepotJobsCreator
                 MessageBox.Show("Unknown error.");
                 return;
             }
-            
+
             if (!sk.TestKey())
             {
                 MessageBox.Show(sk.Error);
                 return;
             }
-            
+
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
@@ -207,7 +208,7 @@ namespace MotoDepotJobsCreator
                 statusStrip.Items[0].Text = w;
                 statusStrip.Items[0].ToolTipText = w;
             }
-                
+
         }
 
         private string fileNameBuilder()
@@ -238,6 +239,17 @@ namespace MotoDepotJobsCreator
         private void cbSigningKey_SelectedIndexChanged(object sender, EventArgs e)
         {
             checkCreateJobButtonCondition();
+        }
+        private void selfGeneratedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DepotJobViewer frm = new DepotJobViewer(true);
+            frm.ShowDialog();
+        }
+
+        private void originalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DepotJobViewer frm = new DepotJobViewer(false);
+            frm.ShowDialog();
         }
     }
 }
