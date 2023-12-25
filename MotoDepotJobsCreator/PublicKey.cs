@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace MotoDepotJobsCreator
 {
-    internal class PublicKey
+    public class PublicKey
     {
         public static string KeysDirname = "keys";
         public static string MotorolaPublicKey = "MotorolaServerPublicKey.xml";

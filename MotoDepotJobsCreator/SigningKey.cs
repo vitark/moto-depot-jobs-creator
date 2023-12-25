@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -9,7 +10,7 @@ using System.Windows.Forms;
 
 namespace MotoDepotJobsCreator
 {
-    internal class SigningKey : PublicKey
+    public class SigningKey : PublicKey
     {
         protected const string privateKeyFile = "ServerPrivateKey.xml";
         private string privateKey { get; }
@@ -79,6 +80,38 @@ namespace MotoDepotJobsCreator
                 file.WriteLine(rsaCryptoServiceProvider.ToXmlString(true));
             }
         }
+
+        public bool CreateDepotJobFile(string data, string depotJobFilename)
+        {
+            var encodedResult = Encoder.Run(
+                File.ReadAllText(privateKey),
+                Encoding.ASCII.GetBytes(data),
+                BigInteger.Parse(Key).ToByteArray(),
+                Convert.FromBase64String(Iv)
+            );
+            var xml = new List<char>();
+            xml.AddRange("<DEPOT>\n");
+            xml.AddRange("<DATA>" + Convert.ToBase64String(encodedResult.Key) + "</DATA>\n");
+            xml.AddRange("<DATA>" + Iv + "</DATA>\n");
+            xml.AddRange("<DATA>" + Convert.ToBase64String(encodedResult.Msg) + "</DATA>\n");
+            xml.AddRange("<DATA>" + Convert.ToBase64String(encodedResult.Signature) + "</DATA>\n");
+            xml.AddRange("</DEPOT>\n");
+            var buffer = xml.Select(c => (byte)c).ToArray();
+
+            var zip = new ZipOutputStream(File.Create(depotJobFilename));
+            zip.SetLevel(0);
+            var entry = new ZipEntry("config.dpt")
+            {
+                DateTime = DateTime.Now,
+                Size = buffer.Length
+            };
+            zip.PutNextEntry(entry);
+            zip.Write(buffer, 0, buffer.Length);
+            zip.Close();
+
+            return true;
+        }
+
 
     }
 }

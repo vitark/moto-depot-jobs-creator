@@ -62,7 +62,7 @@ namespace MotoDepotJobsCreator
             var keysDir = Path.Combine(Directory.GetCurrentDirectory(), SigningKey.KeysDirname);
             if (!Directory.Exists(keysDir) || Directory.GetDirectories(keysDir).Length == 0)
             {
-                warningText("No signing key(s) found.");
+                statusText("No signing key(s) found.");
                 return;
             }
 
@@ -141,7 +141,7 @@ namespace MotoDepotJobsCreator
                     return;
 
                 sk.Validate();
-                warningText(sk.Error);
+                statusText(sk.Error);
                 if (sk.hasError())
                     return;
             }
@@ -165,16 +165,16 @@ namespace MotoDepotJobsCreator
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
-            var sk = cbSigningKey.SelectedValue as SigningKey;
-            if (sk == null)
+            var signingKey = cbSigningKey.SelectedValue as SigningKey;
+            if (signingKey == null)
             {
                 MessageBox.Show("Unknown error.");
                 return;
             }
 
-            if (!sk.TestKey())
+            if (!signingKey.TestKey())
             {
-                MessageBox.Show(sk.Error);
+                MessageBox.Show(signingKey.Error);
                 return;
             }
 
@@ -188,20 +188,24 @@ namespace MotoDepotJobsCreator
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                var depotJobData = new DepotJobData(
+                var depotJobData = new DepotJobCreator(
                         (DepotTaskType)cbTaskType.SelectedValue,
-                        tbSerialNumber.Text,
-                        saveFileDialog.FileName
+                        signingKey,
+                        tbSerialNumber.Text
                     );
 
-                if (new DepotJob().CreateDepotJobFile(depotJobData))
+                if (depotJobData.CreateDepotJobFile(saveFileDialog.FileName)) 
                 {
-                    //addSerialNumber(cbSerialNumer.Text);
+                    statusText("Depot Job file was successfully generated and saved.");
+                } else
+                {
+                    MessageBox.Show("Failed to generate Depot Job file.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        private void warningText(string? w)
+        private void statusText(string? w)
         {
             if (statusStrip.Items.Count > 0)
             {
