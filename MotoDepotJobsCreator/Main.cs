@@ -1,3 +1,4 @@
+using System;
 using System.Configuration;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -13,17 +14,23 @@ namespace MotoDepotJobsCreator
             InitializeComponent();
 
             configureJobTypeCombobox();
+            configureSigningKeyCombobox();
             readAllSettings();
 
             checkCreateJobButtonCondition();
         }
 
-        public class DepotTaskItem
+        private class DepotTaskItem
         {
             public string? Name { get; set; }
             public DepotTaskType Type { get; set; }
         }
 
+        private class SigningKeyItem
+        {
+            public string? Name { get; set; }
+            public SigningKey SigningKey { get; set; }
+        }
 
         private void configureJobTypeCombobox()
         {
@@ -49,6 +56,29 @@ namespace MotoDepotJobsCreator
             cbTaskType.ValueMember = "Type";
         }
 
+        private void configureSigningKeyCombobox()
+        {
+            cbSigningKey.Items.Clear();
+            var keysDir = Path.Combine(Directory.GetCurrentDirectory(), SigningKey.KeysDirname);
+            if (!Directory.Exists(keysDir) || Directory.GetDirectories(keysDir).Length == 0)
+            {
+                warningText(@"No signing key(s) found.");
+                return;
+            }
+
+
+            var dataSource = new List<SigningKeyItem>();
+            foreach (string keyDir in Directory.GetDirectories(keysDir))
+            {
+                var signKey = new SigningKey(keyDir);
+                dataSource.Add(new SigningKeyItem() { Name = signKey.Name, SigningKey = signKey });
+            }
+
+            cbSigningKey.DataSource = dataSource;
+            cbSigningKey.DisplayMember = "Name";
+            cbSigningKey.ValueMember = "SigningKey";
+        }
+
         private void readAllSettings()
         {
             try
@@ -56,9 +86,15 @@ namespace MotoDepotJobsCreator
                 var appSettings = ConfigurationManager.AppSettings;
                 var sn = appSettings["recent-used-sn"];
                 tbSerialNumber.Text = new SerialNumber(sn).validate() ? sn : "";
-                
+
                 var sidx = int.Parse(appSettings["recent-used-jobtype"] ?? "0");
                 cbTaskType.SelectedIndex = sidx < cbTaskType.Items.Count ? sidx : 0;
+
+                if (cbSigningKey.Items.Count > 0)
+                {
+                    var skdx = int.Parse(appSettings["recent-used-signing-key"] ?? "0");
+                    cbSigningKey.SelectedIndex = skdx < cbSigningKey.Items.Count ? skdx : 0;
+                }
             }
             catch (ConfigurationErrorsException)
             {
@@ -70,6 +106,7 @@ namespace MotoDepotJobsCreator
         {
             addUpdateAppSettings("recent-used-sn", tbSerialNumber.Text);
             addUpdateAppSettings("recent-used-jobtype", cbTaskType.SelectedIndex.ToString());
+            addUpdateAppSettings("recent-used-signing-key", cbSigningKey.SelectedIndex.ToString());
         }
 
         static void addUpdateAppSettings(string key, string value)
@@ -94,7 +131,23 @@ namespace MotoDepotJobsCreator
 
         private void checkCreateJobButtonCondition()
         {
-            btnCreate.Enabled = new SerialNumber(tbSerialNumber.Text).validate();
+            btnCreate.Enabled = false;
+            generateMenuItem.Enabled = btnCreate.Enabled;
+
+            if (cbSigningKey.SelectedIndex != -1)
+            {
+                var sk = cbSigningKey.SelectedValue as SigningKey;
+                if (sk == null)
+                    return;
+
+                sk.Validate();
+                warningText(sk.Error);
+                if (sk.hasError())
+                    return;
+            } else
+                return;
+
+            btnCreate.Enabled = (new SerialNumber(tbSerialNumber.Text).validate());
             generateMenuItem.Enabled = btnCreate.Enabled;
         }
 
@@ -111,6 +164,20 @@ namespace MotoDepotJobsCreator
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
+            var sk = cbSigningKey.SelectedValue as SigningKey;
+            if (sk == null)
+            {
+                MessageBox.Show("Unknown error.");
+                return;
+            }
+            
+            if (!sk.TestKey())
+            {
+                MessageBox.Show(sk.Error);
+                return;
+            }
+            
+
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
             saveFileDialog.Filter = "Depot Job (*.zip)|*.zip|All files (*.*)|*.*";
@@ -131,6 +198,16 @@ namespace MotoDepotJobsCreator
                     //addSerialNumber(cbSerialNumer.Text);
                 }
             }
+        }
+
+        private void warningText(string? w)
+        {
+            if (statusStrip.Items.Count > 0)
+            {
+                statusStrip.Items[0].Text = w;
+                statusStrip.Items[0].ToolTipText = w;
+            }
+                
         }
 
         private string fileNameBuilder()
@@ -154,6 +231,11 @@ namespace MotoDepotJobsCreator
         }
 
         private void tbSerialNumber_TextChanged(object sender, EventArgs e)
+        {
+            checkCreateJobButtonCondition();
+        }
+
+        private void cbSigningKey_SelectedIndexChanged(object sender, EventArgs e)
         {
             checkCreateJobButtonCondition();
         }
