@@ -251,5 +251,18 @@ namespace MotoDepotJobsCreator
             DepotJobViewer frm = new DepotJobViewer(false);
             frm.ShowDialog();
         }
+
+        private void generateSigningKeysToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                SigningKey.CreateServerKey(folderBrowserDialog.SelectedPath);
+                var keysDir = Path.Combine(Directory.GetCurrentDirectory(), SigningKey.KeysDirname,"MyKeys");
+                MessageBox.Show(string.Format("Public/Private keys succesfully generated. \n" +
+                    "Now copy those keys in the directory {0}\n" +
+                    "Where a directory called 'MyKeys' will be used as a custom name of the keys.", keysDir));
+            }
+        }
     }
 }

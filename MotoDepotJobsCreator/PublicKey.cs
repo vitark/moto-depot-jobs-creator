@@ -14,7 +14,7 @@ namespace MotoDepotJobsCreator
         public static string KeysDirname = "keys";
         public static string MotorolaPublicKey = "MotorolaServerPublicKey.xml";
 
-        protected string publicKeyFile = "ServerPublicKey.xml";
+        public static string publicKeyFile = "ServerPublicKey.xml";
         protected const string Key = "33580704225959009476022150906537520183714542776639493478938153504813914707333";
         protected const string Iv = "Bns9UYbayCPCUbzHhS5x2A==";
 

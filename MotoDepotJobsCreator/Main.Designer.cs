@@ -44,7 +44,7 @@
             originalToolStripMenuItem = new ToolStripMenuItem();
             selfGeneratedToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
-            generateCertificateToolStripMenuItem = new ToolStripMenuItem();
+            generateSigningKeysToolStripMenuItem = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             aboutToolStripMenuItem = new ToolStripMenuItem();
             btnPasteSN = new Button();
@@ -126,7 +126,7 @@
             // 
             // toolsToolStripMenuItem
             // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { generateMenuItem, toolStripSeparator1, decodeDepotJobToolStripMenuItem, toolStripSeparator2, generateCertificateToolStripMenuItem });
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { generateMenuItem, toolStripSeparator1, decodeDepotJobToolStripMenuItem, toolStripSeparator2, generateSigningKeysToolStripMenuItem });
             toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             toolsToolStripMenuItem.Size = new Size(47, 20);
             toolsToolStripMenuItem.Text = "Tools";
@@ -153,14 +153,14 @@
             // originalToolStripMenuItem
             // 
             originalToolStripMenuItem.Name = "originalToolStripMenuItem";
-            originalToolStripMenuItem.Size = new Size(180, 22);
+            originalToolStripMenuItem.Size = new Size(168, 22);
             originalToolStripMenuItem.Text = "Motorola Original";
             originalToolStripMenuItem.Click += originalToolStripMenuItem_Click;
             // 
             // selfGeneratedToolStripMenuItem
             // 
             selfGeneratedToolStripMenuItem.Name = "selfGeneratedToolStripMenuItem";
-            selfGeneratedToolStripMenuItem.Size = new Size(180, 22);
+            selfGeneratedToolStripMenuItem.Size = new Size(168, 22);
             selfGeneratedToolStripMenuItem.Text = "Self Generated";
             selfGeneratedToolStripMenuItem.Click += selfGeneratedToolStripMenuItem_Click;
             // 
@@ -169,12 +169,12 @@
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(221, 6);
             // 
-            // generateCertificateToolStripMenuItem
+            // generateSigningKeysToolStripMenuItem
             // 
-            generateCertificateToolStripMenuItem.Enabled = false;
-            generateCertificateToolStripMenuItem.Name = "generateCertificateToolStripMenuItem";
-            generateCertificateToolStripMenuItem.Size = new Size(224, 22);
-            generateCertificateToolStripMenuItem.Text = "Generate Public/Private keys";
+            generateSigningKeysToolStripMenuItem.Name = "generateSigningKeysToolStripMenuItem";
+            generateSigningKeysToolStripMenuItem.Size = new Size(224, 22);
+            generateSigningKeysToolStripMenuItem.Text = "Generate Public/Private keys";
+            generateSigningKeysToolStripMenuItem.Click += generateSigningKeysToolStripMenuItem_Click;
             // 
             // helpToolStripMenuItem
             // 
@@ -283,7 +283,7 @@
         private ToolStripMenuItem decodeDepotJobToolStripMenuItem;
         private ToolStripMenuItem originalToolStripMenuItem;
         private ToolStripMenuItem selfGeneratedToolStripMenuItem;
-        private ToolStripMenuItem generateCertificateToolStripMenuItem;
+        private ToolStripMenuItem generateSigningKeysToolStripMenuItem;
         private ToolStripMenuItem helpToolStripMenuItem;
         private ToolStripMenuItem aboutToolStripMenuItem;
         private Button btnPasteSN;

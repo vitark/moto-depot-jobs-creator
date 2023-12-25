@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -62,7 +63,22 @@ namespace MotoDepotJobsCreator
             return true;
         }
 
+        public static void CreateServerKey(string path)
+        {
+            var rsaCryptoServiceProvider = new RSACryptoServiceProvider(2048);
 
+            var ServerPublicKey = Path.Combine(path, publicKeyFile);
+            using (var file = new StreamWriter(ServerPublicKey))
+            {
+                file.WriteLine(rsaCryptoServiceProvider.ToXmlString(false));
+            }
+
+            var ServerPrivateKey = Path.Combine(path, privateKeyFile);
+            using (var file = new StreamWriter(ServerPrivateKey))
+            {
+                file.WriteLine(rsaCryptoServiceProvider.ToXmlString(true));
+            }
+        }
 
     }
 }
