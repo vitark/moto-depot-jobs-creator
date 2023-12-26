@@ -1,3 +1,4 @@
+using NLog;
 using System;
 using System.Configuration;
 using System.IO;
@@ -9,6 +10,7 @@ namespace MotoDepotJobsCreator
 
     public partial class Main : Form
     {
+
         public Main()
         {
             InitializeComponent();
@@ -86,6 +88,9 @@ namespace MotoDepotJobsCreator
                 var appSettings = ConfigurationManager.AppSettings;
                 var sn = appSettings["recent-used-sn"];
                 tbSerialNumber.Text = new SerialNumber(sn).validate() ? sn : "";
+                
+                var count = int.Parse(appSettings["create-count"] ?? "0");
+                lbCreateCount.Text = count.ToString();
 
                 var sidx = int.Parse(appSettings["recent-used-jobtype"] ?? "0");
                 cbTaskType.SelectedIndex = sidx < cbTaskType.Items.Count ? sidx : 0;
@@ -107,6 +112,7 @@ namespace MotoDepotJobsCreator
             addUpdateAppSettings("recent-used-sn", tbSerialNumber.Text);
             addUpdateAppSettings("recent-used-jobtype", cbTaskType.SelectedIndex.ToString());
             addUpdateAppSettings("recent-used-signing-key", cbSigningKey.SelectedIndex.ToString());
+            addUpdateAppSettings("create-count", lbCreateCount.Text);
         }
 
         static void addUpdateAppSettings(string key, string value)
@@ -196,9 +202,16 @@ namespace MotoDepotJobsCreator
 
                 if (depotJobData.CreateDepotJobFile(saveFileDialog.FileName)) 
                 {
+                    inctementLabelCounter();
                     statusText("Depot Job file was successfully generated and saved.");
+                    Program.logger.Info(string.Format("Depot Job file been created. S/N: {0}, Key: {1}, File: {2}",
+                        tbSerialNumber.Text, signingKey.Name, saveFileDialog.FileName));
+                    
                 } else
                 {
+                    Program.logger.Error(string.Format("Failed to generate Depot Job file. S/N: {0}, Key: {1}, File: {2}",
+                         tbSerialNumber.Text, signingKey.Name, saveFileDialog.FileName));
+
                     MessageBox.Show("Failed to generate Depot Job file.", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -266,7 +279,16 @@ namespace MotoDepotJobsCreator
                 MessageBox.Show(string.Format("Public/Private keys succesfully generated. \n" +
                     "Now copy those keys in the directory {0}\n" +
                     "Where a directory called 'MyKeys' will be used as a custom name of the keys.", keysDir));
+
+                Program.logger.Info(string.Format("Public/Private keys succesfully generated. Path: {0}", folderBrowserDialog.SelectedPath));
             }
+        }
+
+        private void inctementLabelCounter()
+        {
+            var count = int.Parse(lbCreateCount.Text ?? "0");
+            count++;
+            lbCreateCount.Text = count.ToString();
         }
     }
 }

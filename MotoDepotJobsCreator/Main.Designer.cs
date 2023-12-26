@@ -52,6 +52,7 @@
             cbSigningKey = new ComboBox();
             label1 = new Label();
             statusStrip = new StatusStrip();
+            lbCreateCount = new ToolStripStatusLabel();
             lbStatusText = new ToolStripStatusLabel();
             menuStrip.SuspendLayout();
             statusStrip.SuspendLayout();
@@ -60,7 +61,9 @@
             // lbStatusText
             // 
             lbStatusText.Name = "lbStatusText";
-            lbStatusText.Size = new Size(0, 17);
+            lbStatusText.Size = new Size(317, 17);
+            lbStatusText.Spring = true;
+            lbStatusText.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lb1
             // 
@@ -230,13 +233,20 @@
             // 
             // statusStrip
             // 
-            statusStrip.Items.AddRange(new ToolStripItem[] { lbStatusText });
+            statusStrip.Items.AddRange(new ToolStripItem[] { lbStatusText, lbCreateCount });
             statusStrip.Location = new Point(0, 184);
             statusStrip.Name = "statusStrip";
             statusStrip.Size = new Size(376, 22);
             statusStrip.SizingGrip = false;
             statusStrip.TabIndex = 10;
             statusStrip.Text = "statusStrip";
+            // 
+            // lbCreateCount
+            // 
+            lbCreateCount.ForeColor = SystemColors.ControlText;
+            lbCreateCount.Name = "lbCreateCount";
+            lbCreateCount.Size = new Size(13, 17);
+            lbCreateCount.Text = "0";
             // 
             // Main
             // 
@@ -292,5 +302,6 @@
         private ComboBox cbSigningKey;
         private Label label1;
         private StatusStrip statusStrip;
+        private ToolStripStatusLabel lbCreateCount;
     }
 }
